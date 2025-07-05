@@ -2,6 +2,8 @@
 
 from telegram import Update
 from telegram.ext import ContextTypes
+from database.db import set_favorite
+
 
 async def budget_choice_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Delegate an inline-button tap to the budget_choice step."""
@@ -49,3 +51,30 @@ async def time_choice_callback(update: Update, context: ContextTypes.DEFAULT_TYP
 
     from handlers.conversations import time_choice
     return await time_choice(update, context)
+
+async def favorite_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    # Extract the recipe ID from the callback data
+    try:
+        _, recipe_id_str = query.data.split("|", 1)
+        recipe_id = int(recipe_id_str)
+        user_id = query.from_user.id
+        
+        # Update the favorite status
+        success = set_favorite(user_id, recipe_id, True)
+        
+        if success:
+            await query.edit_message_text("⭐ Added to favorites!")
+        else:
+            await query.edit_message_text("❌ Could not add to favorites. Please try again.")
+            
+    except (ValueError, IndexError) as e:
+        print(f"[ERROR] Invalid callback data: {query.data}, error: {e}")
+        await query.edit_message_text("❌ Invalid request. Please try again.")
+    except Exception as e:
+        print(f"[ERROR] Error in favorite_callback: {e}")
+        import traceback
+        print(f"[ERROR] Traceback: {traceback.format_exc()}")
+        await query.edit_message_text("❌ An error occurred. Please try again.")

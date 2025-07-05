@@ -15,3 +15,4 @@ def validate_time(text: str) -> bool:
 
 def validate_budget(text: str) -> bool:
     return text in {"100-200", "200-500", "500-1000"}
+ 

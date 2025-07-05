@@ -7,7 +7,6 @@ def format_preferences(prefs: UserPreferences) -> str:
     return (
         f"Dietary: {', '.join(prefs.dietary_restrictions)}\n"
         f"Skill: {prefs.skill_level}\n"
-        f"Disliked: {', '.join(prefs.disliked_ingredients)}\n"
         f"Budget: {prefs.budget_range} THB"
     )
 
